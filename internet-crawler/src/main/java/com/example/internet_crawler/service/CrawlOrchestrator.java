@@ -18,16 +18,17 @@ public class CrawlOrchestrator {
 	
 	private final InternetPageService internetPageService;
 	
-	public void getNewUrl() throws IOException{
+	public HashSet<String> getNewUrl() throws IOException{
 		InternetPage page = internetPageService.getFirst( Status.UNWATCHED );
 		if (page == null) {
 		    System.out.println("Нет ссылок для обхода!");
-		    return;
+		    return null;
 		}
 		HashSet<String> links = crawlerService.crawl( page.getUrl() );
 		internetPageService.saveAll( links );
 		page.setStatus( Status.WATCHED );
 		internetPageService.update( page );
+		return links;
 	}
 	
 }
