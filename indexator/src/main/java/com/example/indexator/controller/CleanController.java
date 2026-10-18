@@ -19,11 +19,11 @@ public class CleanController {
 	private final CleanService cleanService;
 	
 	private final StemmingService stemmingService;
-	
-	@GetMapping("/get")
-	public Map<String, Long> getCleanText() throws IOException{
-		WordsDTO dto = cleanService.cleanHTML();
-		return stemmingService.cleanFrom( dto );
-	}
+//	
+//	@GetMapping("/get")
+//	public Map<String, Long> getCleanText() throws IOException{
+//		WordsDTO dto = cleanService.cleanHTML();
+//		return stemmingService.cleanFrom( dto );
+//	}
 	
 }

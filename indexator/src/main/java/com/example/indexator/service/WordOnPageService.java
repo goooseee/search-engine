@@ -29,7 +29,7 @@ public class WordOnPageService {
 					return  WordOnPage
 							.builder()
 							.word( word  )
-							.amount( w.getValue() )
+							.amount( w.getValue().intValue() )
 							.position( Position.TOP )
 							.internetPage( page )
 							.build();
@@ -41,7 +41,7 @@ public class WordOnPageService {
 					return  WordOnPage
 							.builder()
 							.word( word  )
-							.amount( w.getValue() )
+							.amount( w.getValue().intValue() )
 							.position( Position.TEXT )
 							.internetPage( page )
 							.build();

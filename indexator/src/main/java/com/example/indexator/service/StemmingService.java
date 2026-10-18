@@ -1,6 +1,7 @@
 package com.example.indexator.service;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,16 +27,14 @@ public class StemmingService {
 		    "их", "им", "них", "ним", "него", "чем", "свой", "свои", "свое"
 	);
 	
-	public WordsResponseDTO cleanFrom(WordsDTO dto) {
+	public Set<String> cleanFrom(String rawText) {
 		String regex = "[^а-яёa-z\\s]";
-		String title = dto.top().toLowerCase().replaceAll( regex, " " );
-		String text = dto.text().toLowerCase().replaceAll( regex, " " );
-		List<String> title1 = Arrays.asList(title.split( "\\s+" ));
+		String text = rawText.toLowerCase().replaceAll( regex, " " );
 		List<String> text1 = Arrays.asList(text.split( "\\s+" ));
-		return new WordsResponseDTO( convertToMap( title1 ), convertToMap( text1 ) );
+		return new HashSet<>(text1);
 	}
 	
-	private Map<String, Long> convertToMap(List<String> text){
+	public Map<String, Long> convertToMap(Set<String> text){
 		RussianStemmer stemmer = new RussianStemmer();
 		return text.stream().filter( w -> !stopWords.contains( w ) )
 				.map( w -> {

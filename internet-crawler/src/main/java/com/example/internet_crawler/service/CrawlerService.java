@@ -12,10 +12,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
+
+import com.example.internet_crawler.DTO.CrawleResponseDTO;
 @Service
 public class CrawlerService {
 	
-	public HashSet<String> crawl(String url) throws IOException {
+	public CrawleResponseDTO crawl(String url) throws IOException {
 		String rule[] = {"Служебная:", "Википедия:", "Справка:", "Файл:", "Категория:", "?action=edit&redlink=1"};
 		Document doc = Jsoup.connect( url ).get();
 		Elements links = doc.select( "a[href]" );
@@ -38,7 +40,7 @@ public class CrawlerService {
 			}
 		}
 		System.out.println( lin.size() );
-		return lin;
+		return new CrawleResponseDTO( doc.html(), lin );
 	}
 
 }
