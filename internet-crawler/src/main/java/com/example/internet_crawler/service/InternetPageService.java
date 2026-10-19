@@ -30,8 +30,23 @@ public class InternetPageService {
 	public InternetPage getFirst(Status status) {
 		return internetPageRepository.findFirstByStatus( status ).orElse( null );
 	}
+	@Transactional
+	public List<InternetPage> getFirst20(Status status) {
+		List<InternetPage> internetPages = internetPageRepository.findFirst20ByStatus( status );
+		if(internetPages.isEmpty()) {
+			return List.of();
+		}
+		List<Long> ids = internetPages.stream().map( InternetPage::getId ).toList();
+		internetPageRepository.updateFieldForIds( Status.INPROCESS, ids );
+		return internetPages;
+	}
 	
 	public InternetPage update(InternetPage internetPage) {
 		return internetPageRepository.save( internetPage );
-	} 
+	}
+	
+	public InternetPage failed(InternetPage internetPage) {
+		internetPage.setStatus( Status.FAILED );
+		return internetPageRepository.save( internetPage );
+	}
 }
