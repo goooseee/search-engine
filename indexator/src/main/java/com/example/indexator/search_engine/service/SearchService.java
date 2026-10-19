@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.example.indexator.entity.InternetPage;
@@ -24,7 +25,7 @@ public class SearchService {
 	private final StemmingService stemmingService;
 	
 	private final WordOnPageRepository2 wordOnPageRepository;
-	
+	@Cacheable(value = "search", key = "#request")
 	public List<SearchResponseDTO> doSearch(String request) {
 		Set<String> cleanWord = stemmingService.cleanFrom( request );
 		List<WordOnPage> wordsByPage = wordOnPageRepository.findAllByWord_WordIn( stemmingService.convertToMap( cleanWord ).keySet() );

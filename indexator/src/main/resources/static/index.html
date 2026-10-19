@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Java Search Engine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f9f9f9;
+        }
+        .container {
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 3.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+        }
+        h1 span:nth-child(1) { color: #4285F4; }
+        h1 span:nth-child(2) { color: #EA4335; }
+        h1 span:nth-child(3) { color: #FBBC05; }
+        h1 span:nth-child(4) { color: #4285F4; }
+        h1 span:nth-child(5) { color: #34A853; }
+        h1 span:nth-child(6) { color: #EA4335; }
+
+        .search-box {
+            display: flex;
+            width: 100%;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            box-shadow: 0 1px 6px rgba(32,33,36,.28);
+            overflow: hidden;
+            background: #fff;
+        }
+        .search-box:hover {
+            box-shadow: 0 1px 8px rgba(32,33,36,.38);
+        }
+        input[type="text"] {
+            flex: 1;
+            height: 48px;
+            border: none;
+            outline: none;
+            padding-left: 20px;
+            font-size: 16px;
+            border-radius: 24px 0 0 24px;
+        }
+        button {
+            background-color: #f8f9fa;
+            border: none;
+            padding: 0 20px;
+            font-size: 15px;
+            cursor: pointer;
+            color: #5f6368;
+            border-radius: 0 24px 24px 0;
+        }
+        button:hover {
+            background-color: #f1f3f4;
+            color: #202124;
+        }
+        #stats {
+            margin-top: 15px;
+            color: #70757a;
+            font-size: 14px;
+            text-align: left;
+        }
+        .results {
+            margin-top: 20px;
+            text-align: left;
+            width: 100%;
+        }
+        .result-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .result-item a {
+            color: #1a0dab;
+            font-size: 18px;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .result-item a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>
+        <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span>
+    </h1>
+    
+    <div class="search-box">
+        <input type="text" id="query" placeholder="Введите поисковый запрос..." onkeydown="checkEnter(event)">
+        <button onclick="performSearch()">Искать</button>
+    </div>
+
+    <div id="stats"></div>
+    <div class="results" id="results"></div>
+</div>
+
+<script>
+    async function performSearch() {
+        const query = document.getElementById('query').value.trim();
+        if (!query) return;
+
+        const statsDiv = document.getElementById('stats');
+        const resultsDiv = document.getElementById('results');
+        
+        statsDiv.innerHTML = "Ищем в базе...";
+        resultsDiv.innerHTML = "";
+
+        const startTime = performance.now();
+
+        try {
+            // Стучимся на твой Java-контроллер
+            const response = await fetch(`/getUrl?request=${encodeURIComponent(query)}`);
+            const data = await response.json();
+
+            const endTime = performance.now();
+            const duration = Math.round(endTime - startTime);
+
+            statsDiv.innerHTML = `Найдено результатов: ${data.length} (за ${duration} мс)`;
+
+            if (data.length === 0) {
+                resultsDiv.innerHTML = "<p>Ничего не найдено.</p>";
+                return;
+            }
+
+            let html = "";
+            data.forEach(item => {
+                html += `
+                    <div class="result-item">
+                        <a href="${item.url}" target="_blank">${item.url}</a>
+                    </div>
+                `;
+            });
+            resultsDiv.innerHTML = html;
+
+        } catch (error) {
+            console.err(error);
+            statsDiv.innerHTML = "Ошибка при выполнении поиска.";
+        }
+    }
+
+    function checkEnter(event) {
+        if (event.key === 'Enter') {
+            performSearch();
+        }
+    }
+</script>
+
+</body>
+</html>
