@@ -1,0 +1,2 @@
+CREATE DATABASE crawler_db;
+CREATE DATABASE indexer_db;

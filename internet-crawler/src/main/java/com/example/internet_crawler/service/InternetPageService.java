@@ -2,6 +2,7 @@ package com.example.internet_crawler.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -18,10 +19,10 @@ public class InternetPageService {
 	
 	private final InternetPageRepository internetPageRepository;
 	@Transactional
-	public void saveAll(HashSet<String> links) {
+	public void saveAll(Set<String> links, int depth) {
 		List<InternetPage> pages = links.stream()
 				.filter( link -> !internetPageRepository.existsByUrl( link ) )
-				.map( InternetPage::new )
+				.map( link -> new InternetPage( link, depth ) )
 				.toList();
 		internetPageRepository.saveAll( pages );
 	}

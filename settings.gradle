@@ -1,3 +1,4 @@
 rootProject.name = 'search-engine'
 
 include 'internet-crawler'
+include 'indexator'

@@ -23,8 +23,10 @@ public class InternetPage {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Status status = Status.UNWATCHED;
+	private int depth = 0;
 	
-	public InternetPage(String url) {
+	public InternetPage(String url, int depth) {
 		this.url = url;
+		this.depth = depth;
 	}
 }
