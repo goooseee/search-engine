@@ -25,22 +25,20 @@ public class WordService {
 		Set<String> allWord = new HashSet<>( dto.title().keySet() );
 		allWord.addAll( dto.text().keySet() );
 		
-		Set<Word> allWordFromDB = getAllWordInSet( allWord );
-		Set<String> inBDWord = allWordFromDB.stream().map( Word::getWord ).collect( Collectors.toSet() );
-		Set<String> restWord = new HashSet<>(allWord);
-		restWord.removeAll( inBDWord );
-		Set<Word> restWordFromDB = saveWords( restWord );
-		Set<Word> result = new HashSet<>(allWordFromDB);
-		result.addAll( restWordFromDB );
-		return result.stream().collect( Collectors.toMap( Word::getWord, Function.identity() ) );
+		if(allWord.isEmpty()) {
+			return Map.of();
+		}
+		
+		List<Word> saveWords = repository.upsertWordIn( allWord.toArray( String[]::new ));
+		return saveWords.stream().collect( Collectors.toMap( Word::getWord, Function.identity()));
 	}
 	
-	public Set<Word> getAllWordInSet(Set<String> words){
-		return repository.findAllByWordIn( words );
-	}
+//	public Set<Word> getAllWordInSet(Set<String> words){
+//		return repository.findAllByWordIn( words );
+//	}
 	
-	public Set<Word> saveWords(Set<String> words) {
-		List<Word> saveWord = words.stream().map( Word::new ).collect( Collectors.toList() );
-		return new HashSet<>(repository.saveAll( saveWord ));
-	}
+//	public Set<Word> saveWords(Set<String> words) {
+//		List<Word> saveWord = words.stream().map( Word::new ).collect( Collectors.toList() );
+//		return new HashSet<>(repository.saveAll( saveWord ));
+//	}
 }

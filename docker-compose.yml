@@ -42,11 +42,27 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
     depends_on:
       - kafka
+
   redis:
     image: redis:7-alpine
     container_name: redis_cache
     ports:
       - "6379:6379"
+
+  minio:
+    image: cgr.dev/chainguard/minio:latest
+    container_name: minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+    - minio_data:/data
+   
   crawler-service:
     build:
         context: .
@@ -61,10 +77,12 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-
+      MINIO_URL: http://minio:9000
     depends_on:
     - postgres
     - kafka
+    - minio
+
   indexer-service:
     build:
       context: .
@@ -81,8 +99,11 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+      MINIO_URL: http://minio:9000
     depends_on:
-      - postgres
-      - kafka
+    - postgres
+    - kafka
+    - minio
 volumes:
   postgres_data:
+  minio_data:

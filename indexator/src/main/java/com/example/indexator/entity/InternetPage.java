@@ -1,5 +1,6 @@
 package com.example.indexator.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,10 +20,13 @@ public class InternetPage {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+	@Column(unique = true)
 	private String url;
 	
-	public InternetPage(String url) {
+	private int amountOfWord;
+	
+	public InternetPage(String url, int amountOfWord) {
 		this.url = url;
+		this.amountOfWord = amountOfWord;
 	}
 }

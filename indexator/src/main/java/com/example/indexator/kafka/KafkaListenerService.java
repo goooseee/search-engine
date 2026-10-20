@@ -16,7 +16,7 @@ public class KafkaListenerService{
 	public void listen(CrawlerEvent event) {
 		System.out.println( event.url() );
 		
-		indexerService.parsePage( event.url(), event.html() );
+		indexerService.parsePage( event.url(), event.htmlKey() );
 	}
 	
 }

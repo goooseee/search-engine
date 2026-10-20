@@ -22,13 +22,13 @@ public class CrawlerController {
 	private final InternetPageService internetPageService;
 	
 	@GetMapping("/get")
-	public Set<String> getFromPage() throws IOException{
+	public void getFromPage() throws IOException{
 		HashSet<String> t = new HashSet<>();
 		t.add( "https://ru.wikipedia.org/wiki/Grand_Theft_Auto_Advance" );
 		if(internetPageService.getFirst( Status.UNWATCHED ) == null) {
 			internetPageService.saveAll( t, 0 );
 		}
-		return crawlOrchestrator.getNewUrl();
+		crawlOrchestrator.getNewUrl();
 	}
 	
 }

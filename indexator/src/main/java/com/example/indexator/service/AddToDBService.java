@@ -21,8 +21,8 @@ public class AddToDBService {
 	
 	private final WordService wordService;
 	@Transactional
-	public void saveToBD(String url, WordsResponseDTO dto) {
-		InternetPage page = internetPageService.getOrCreatePage( url );
+	public void saveToBD(String url, WordsResponseDTO dto, int amountOfWord) {
+		InternetPage page = internetPageService.getOrCreatePage( url, amountOfWord);
 		
 		Map<String,Word> words = wordService.getOrCreate( dto );
 		

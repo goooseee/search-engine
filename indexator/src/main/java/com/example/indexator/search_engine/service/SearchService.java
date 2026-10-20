@@ -6,15 +6,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.data.autoconfigure.web.DataWebProperties.Pageable;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.example.indexator.entity.InternetPage;
 import com.example.indexator.entity.Position;
 import com.example.indexator.entity.WordOnPage;
+import com.example.indexator.repository.InternetPageRepository;
 import com.example.indexator.search_engine.repository.WordOnPageRepository2;
 
 import com.example.indexator.search_engine.dto.SearchResponseDTO;
+import com.example.indexator.service.InternetPageService;
 import com.example.indexator.service.StemmingService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,21 +29,24 @@ public class SearchService {
 	private final StemmingService stemmingService;
 	
 	private final WordOnPageRepository2 wordOnPageRepository;
+	
+	private final InternetPageService internetPageService;
+	
 	@Cacheable(value = "search", key = "#request")
 	public List<SearchResponseDTO> doSearch(String request) {
-		Set<String> cleanWord = stemmingService.cleanFrom( request );
-		List<WordOnPage> wordsByPage = wordOnPageRepository.findAllByWord_WordIn( stemmingService.convertToMap( cleanWord ).keySet() );
-		System.out.println("Запрос пользователя: " + request);
-		System.out.println("Корни слов после стемминга: " + cleanWord);
-		Map<InternetPage, Integer> pageByScore = wordsByPage
-				.stream().collect( Collectors
-						.groupingBy( WordOnPage::getInternetPage,
-								Collectors.summingInt( w->
-								w.getAmount()*(w.getPosition() == Position.TEXT ? 1:10))) );
-		return pageByScore.entrySet().stream().sorted(Map.Entry.<InternetPage, Integer>comparingByValue().reversed())
-				.map( w ->{
-					return new SearchResponseDTO( w.getKey().getUrl() );
-				}).toList();
+		List<String> cleanWord = stemmingService.cleanFrom( request );
+		Set<String> words = stemmingService.convertToMap( cleanWord ).keySet();
+		if(words.isEmpty()) {
+			return List.of();
+		}
+		
+		long totalPage = internetPageService.count();
+		
+		return wordOnPageRepository
+				.searchUrls( words, Math.max( totalPage, 1L ), PageRequest.of( 0, 20 ) )
+				.stream()
+				.map(SearchResponseDTO::new)
+				.toList();
 	}
 	
 }
