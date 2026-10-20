@@ -27,11 +27,11 @@ public class IndexerService {
 		try {
 		String html = storageService.downloadHtml( htmlKey );
 		WordsDTO dto = cleanService.cleanHTML( html );
-		Set<String> title = stemmingService.cleanFrom( dto.top() );
-		Set<String> text = stemmingService.cleanFrom( dto.text() );
+		List<String> title = stemmingService.cleanFrom( dto.top() );
+		List<String> text = stemmingService.cleanFrom( dto.text() );
 		WordsResponseDTO responseDTO = new WordsResponseDTO( 
 				stemmingService.convertToMap( title ), stemmingService.convertToMap( text ) );
-		dbService.saveToBD( url, responseDTO );
+		dbService.saveToBD( url, responseDTO, title.size()+text.size() );
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

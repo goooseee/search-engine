@@ -15,18 +15,22 @@ public class InternetPageService {
 	
 	private final InternetPageRepository repository;	
 	
-	public InternetPage getOrCreatePage(String url) {
-		return getByUrl( url );
+	public InternetPage getOrCreatePage(String url, int amountOfWord) {
+		return getByUrl( url, amountOfWord );
 	}
 	
-	private InternetPage savePage(String Url) {
-		InternetPage internetPage = new InternetPage( Url );
+	private InternetPage savePage(String Url, int amountOfWord) {
+		InternetPage internetPage = new InternetPage( Url, amountOfWord );
 		return repository.save( internetPage );
 	}
 	
-	private InternetPage getByUrl(String url) {
+	public long count() {
+		return repository.count();
+	}
+	
+	private InternetPage getByUrl(String url, int amountOfWord) {
 		return repository.findByUrl( url )
-				.orElseGet(() -> savePage( url ) );
+				.orElseGet(() -> savePage( url, amountOfWord ) );
 	}
 	
 	public void getFirstPage() {

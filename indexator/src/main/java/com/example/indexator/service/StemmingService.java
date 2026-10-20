@@ -27,14 +27,14 @@ public class StemmingService {
 		    "их", "им", "них", "ним", "него", "чем", "свой", "свои", "свое"
 	);
 	
-	public Set<String> cleanFrom(String rawText) {
+	public List<String> cleanFrom(String rawText) {
 		String regex = "[^а-яёa-z\\s]";
 		String text = rawText.toLowerCase().replaceAll( regex, " " );
 		List<String> text1 = Arrays.asList(text.split( "\\s+" ));
-		return new HashSet<>(text1);
+		return text1;
 	}
 	
-	public Map<String, Long> convertToMap(Set<String> text){
+	public Map<String, Long> convertToMap(List<String> text){
 		RussianStemmer stemmer = new RussianStemmer();
 		return text.stream().filter( w -> !stopWords.contains( w ) )
 				.map( w -> {
